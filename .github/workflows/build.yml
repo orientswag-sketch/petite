@@ -7,13 +7,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: |
-          xcodebuild -scheme "Mon app" -configuration Release \
+          xcodebuild -scheme "Pépite" -configuration Release \
             -destination 'generic/platform=iOS' -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
           ls -la build/Build/Products/Release-iphoneos/
           mkdir -p Payload
-          cp -R "build/Build/Products/Release-iphoneos/Mon app" "Payload/Mon app.app"
-          ls -la "Payload/Mon app.app"
+          cp -R "build/Build/Products/Release-iphoneos/Pépite "Payload/Pépite.app"
+          ls -la "Payload/Pépite.app"
           zip -r app.ipa Payload
       - uses: actions/upload-artifact@v4
         with:
