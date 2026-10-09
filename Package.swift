@@ -8,7 +8,7 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "Mon app",
+    name: "Pépite",
     platforms: [
         .iOS("26.0")
     ],
