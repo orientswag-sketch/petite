@@ -5,18 +5,50 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Create project
+        run: |
+          cat > project.yml <<'EOF'
+          name: Pepite
+          targets:
+            Pepite:
+              type: application
+              platform: iOS
+              deploymentTarget: "26.0"
+              sources:
+                - path: .
+                  excludes:
+                    - Package.swift
+                    - project.yml
+                    - .github
+                    - build
+                    - Payload
+              settings:
+                base:
+                  PRODUCT_BUNDLE_IDENTIFIER: com.pepite.app
+                  PRODUCT_NAME: Pepite
+                  SWIFT_VERSION: "5.0"
+                  TARGETED_DEVICE_FAMILY: "1,2"
+                  GENERATE_INFOPLIST_FILE: YES
+                  INFOPLIST_KEY_CFBundleDisplayName: Pepite
+                  INFOPLIST_KEY_UILaunchScreen_Generation: YES
+                  INFOPLIST_KEY_NSCameraUsageDescription: Pour photographier vos pieces
+                  INFOPLIST_KEY_NSPhotoLibraryUsageDescription: Pour choisir vos photos
+                  ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+                  OTHER_SWIFT_FLAGS: "-enable-upcoming-feature BareSlashRegexLiterals"
+          EOF
+          xcodegen generate
       - name: Build
         run: |
-          xcodebuild -scheme "Pépite" -configuration Release \
-            -destination 'generic/platform=iOS' -derivedDataPath build \
+          xcodebuild -project Pepite.xcodeproj -scheme Pepite \
+            -configuration Release -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
-          ls -la build/Build/Products/Release-iphoneos/
-          mkdir -p Payload
-          cp -R "build/Build/Products/Release-iphoneos/Pépite "Payload/Pépite.app"
-          ls -la "Payload/Pépite.app"
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/Pepite.app Payload/
           zip -r app.ipa Payload
       - uses: actions/upload-artifact@v4
         with:
           name: app
           path: app.ipa
-
